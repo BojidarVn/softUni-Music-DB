@@ -1,12 +1,14 @@
 package bg.softuni.musicdb.config;
 
 import bg.softuni.musicdb.service.impl.MusicDBUserService;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -22,9 +24,10 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http
+                .authorizeRequests().
                 // allow access to static resources to anyone
-                .antMatchers("/js/**", "/css/**", "/img/**").permitAll()
+                        requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 // allow access to index, user login and registration to anyone
                 .antMatchers("/", "/users/login", "/users/register").permitAll()
                 // protect all other pages
@@ -36,9 +39,9 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 // our login page will be served by the controller with mapping /users/login
                 .loginPage("/users/login")
                 // the name of the user name input field in OUR login form is username (optional)
-                .usernameParameter("username")
+                .usernameParameter(UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_USERNAME_KEY)
                 // the name of the user password input field in OUR login form is password (optional)
-                .passwordParameter("password")
+                .passwordParameter(UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_PASSWORD_KEY)
                 // on login success redirect here
                 .defaultSuccessUrl("/home")
                 // on login failure redirect here
