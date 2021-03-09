@@ -43,6 +43,8 @@ public class UserServiceImpl implements UserService {
 
             admin.setRoles(List.of(adminRole,userRole));
             user.setRoles(List.of(userRole));
+
+            userRepository.saveAll(List.of(admin,user));
         }
 
     }
