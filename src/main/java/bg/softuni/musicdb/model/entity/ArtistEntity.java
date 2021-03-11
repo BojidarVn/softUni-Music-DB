@@ -14,7 +14,8 @@ public class ArtistEntity extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Expose
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String careerInformation;
 
 
