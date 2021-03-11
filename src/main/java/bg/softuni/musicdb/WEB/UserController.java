@@ -1,5 +1,9 @@
 package bg.softuni.musicdb.WEB;
 
+import bg.softuni.musicdb.model.binding.UserRegistrationBindingModel;
+import bg.softuni.musicdb.model.service.UserRegistrationServiceModel;
+import bg.softuni.musicdb.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +16,13 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/users")
 public class UserController {
 
+    private final ModelMapper modelMapper;
+    private final UserService userService;
+
+    public UserController(ModelMapper modelMapper, UserService userService) {
+        this.modelMapper = modelMapper;
+        this.userService = userService;
+    }
 
     @GetMapping("login")
     public String login() {
@@ -24,14 +35,26 @@ public class UserController {
         return "register";
     }
 
+    @PostMapping("/register")
+    public String registerAndLoginUser(UserRegistrationBindingModel registrationBindingModel, ModelMapper modelMapper) {
+        UserRegistrationServiceModel userServiceModel = modelMapper
+                .map(registrationBindingModel, UserRegistrationServiceModel.class);
+
+        userService.registerAndLoginUser(userServiceModel);
+
+// TODO VALIDATION!!!
+        return "redirect:/home";
+    }
+
+
     @PostMapping("/login-error")
     public ModelAndView failedLogin(@ModelAttribute(UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_USERNAME_KEY)
-                                                String username) {
-      ModelAndView   modelAndView=new ModelAndView();
-      modelAndView.addObject("bad_credentials",true);
-      modelAndView.addObject("username",username);
+                                            String username) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("bad_credentials", true);
+        modelAndView.addObject("username", username);
 
-      modelAndView.setViewName("/login");
-      return modelAndView;
+        modelAndView.setViewName("/login");
+        return modelAndView;
     }
 }
