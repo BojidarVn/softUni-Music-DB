@@ -6,11 +6,15 @@ import bg.softuni.musicdb.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/users")
@@ -22,6 +26,12 @@ public class UserController {
     public UserController(ModelMapper modelMapper, UserService userService) {
         this.modelMapper = modelMapper;
         this.userService = userService;
+    }
+
+    @ModelAttribute("registrationBindingModel")
+    public UserRegistrationBindingModel createBindingModel() {
+
+        return new UserRegistrationBindingModel();
     }
 
     @GetMapping("login")
@@ -36,7 +46,19 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerAndLoginUser(UserRegistrationBindingModel registrationBindingModel, ModelMapper modelMapper) {
+    public String registerAndLoginUser(@Valid UserRegistrationBindingModel registrationBindingModel,
+                                       BindingResult bindingResult,
+                                       RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("registrationBindingModel", registrationBindingModel);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.registrationBindingModel", bindingResult);
+
+            return "redirect:/users/register";
+        }
+
+        // TODO validate username exists
+
         UserRegistrationServiceModel userServiceModel = modelMapper
                 .map(registrationBindingModel, UserRegistrationServiceModel.class);
 
