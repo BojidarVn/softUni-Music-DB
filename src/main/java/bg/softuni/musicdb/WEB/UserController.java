@@ -57,7 +57,13 @@ public class UserController {
             return "redirect:/users/register";
         }
 
-        // TODO validate username exists
+      if (userService.usernameExists(registrationBindingModel.getUsername())) {
+
+          redirectAttributes.addFlashAttribute("registrationBindingModel", registrationBindingModel);
+          redirectAttributes.addFlashAttribute("userExistsError", true);
+
+          return "redirect:/users/register";
+      }
 
         UserRegistrationServiceModel userServiceModel = modelMapper
                 .map(registrationBindingModel, UserRegistrationServiceModel.class);
