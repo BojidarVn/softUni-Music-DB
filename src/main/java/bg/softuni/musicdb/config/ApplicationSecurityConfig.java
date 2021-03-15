@@ -46,6 +46,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/home")
                 // on login failure redirect here
                 .failureForwardUrl("/users/login-error")
+//                .failureUrl("/users/login-error")
                 .and()
                 .logout()
                 // which endpoint performs logout e.g. http://localhost:8080/logout (!this should be POST request)

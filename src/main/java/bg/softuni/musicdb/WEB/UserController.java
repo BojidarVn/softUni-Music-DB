@@ -81,12 +81,13 @@ public class UserController {
 
     @PostMapping("/login-error")
     public ModelAndView failedLogin(@ModelAttribute(UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_USERNAME_KEY)
-                                            String username) {
+                                            String username,RedirectAttributes redirectAttributes) {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("bad_credentials", true);
-        modelAndView.addObject("username", username);
 
-        modelAndView.setViewName("/login");
+        redirectAttributes.addFlashAttribute("bad_credentials", true);
+        redirectAttributes.addFlashAttribute("username", username);
+
+        modelAndView.setViewName("redirect:/users/login");
         return modelAndView;
     }
 }
